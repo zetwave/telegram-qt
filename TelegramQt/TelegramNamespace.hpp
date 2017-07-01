@@ -23,6 +23,7 @@
 #include <QObject>
 #include <QFlags>
 #include <QMetaType>
+#include <QVector>
 
 class CTelegramDispatcher;
 class CTelegramAuthModule;
@@ -219,6 +220,32 @@ protected:
     Private *d;
 };
 
+struct TextEntity
+{
+    Q_GADGET
+public:
+    enum Type {
+        Unknown,
+        Mention,
+        Hashtag,
+        BotCommand,
+        Url,
+        Email,
+        Bold,
+        Italic,
+        Code,
+        Pre,
+        TextUrl,
+    };
+    Q_ENUM(Type)
+
+    quint32 offset;
+    quint32 length;
+    QString language;
+    QString url;
+    Type type;
+};
+
 struct Message
 {
     Message() :
@@ -240,6 +267,9 @@ struct Message
     const Peer forwardFromPeer() const { return m_forwardPeer; }
     void setForwardFromPeer(const Peer &peer) { m_forwardPeer = peer; }
 
+    QVector<TextEntity> entities() const { return m_entities; }
+    void setEntities(const QVector<TextEntity> &entities);
+
     quint32 forwardContactId;
     QString text;
     quint32 id;
@@ -251,6 +281,7 @@ struct Message
 private:
     Peer m_peer;
     Peer m_forwardPeer;
+    QVector<TextEntity> m_entities;
 };
 
 class MessageMediaInfo
