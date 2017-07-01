@@ -43,6 +43,7 @@
 
 #include <QFile>
 #include <QFileDialog>
+#include <QTextBlock>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -72,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_dialogModel->addSourceModel(m_chatInfoModel);
 
     ui->setupUi(this);
+    ui->messagingMessageRich->setPlainText(QStringLiteral("the text has bold, italic and code parts"));
     m_contactListModel->setSourceModel(m_contactsModel);
     ui->contactListTable->setModel(m_contactListModel);
     ui->dialogList->setModel(m_dialogModel);
@@ -1166,4 +1168,110 @@ void MainWindow::on_groupChatLeaveChat_clicked()
         unsetChatCreationMode();
         setActiveChat(m_activeChatId);
     }
+}
+
+void MainWindow::on_groupChatSendButtonRich_clicked()
+{
+    bool boldFont = false;
+    bool italicFont = false;
+    bool codeFont = false;
+
+    QVector<Telegram::TextEntity> entities;
+
+    Telegram::TextEntity entBold;
+    Telegram::TextEntity entItalic;
+    Telegram::TextEntity entCode;
+    entBold.type = Telegram::TextEntity::Bold;
+    entItalic.type = Telegram::TextEntity::Italic;
+    entCode.type = Telegram::TextEntity::Code;
+
+
+    for (QTextBlock block = ui->messagingMessageRich->document()->begin(); block.isValid(); block = block.next()) {
+        for (QTextBlock::iterator i = block.begin(); !i.atEnd(); ++i) {
+            QTextFragment fragment = i.fragment();
+            if (fragment.isValid()) {
+                QTextCharFormat f = fragment.charFormat();
+                qDebug() << "text:" << fragment.text() << "pos:" << fragment.position() << fragment.length();
+                qDebug() << "italic:" << f.fontItalic();
+                if (italicFont != f.fontItalic()) {
+                    qDebug() << "italic changed";
+                    if (!italicFont) {
+                        italicFont = true;
+                        entItalic.offset = fragment.position();
+                    } else {
+                        entItalic.length = fragment.position() - entItalic.offset;
+                        entities << entItalic;
+                        italicFont = false;
+                    }
+                }
+                qDebug() << "weight:" << f.fontWeight();
+                if (boldFont != (f.fontWeight() >= QFont::Bold)) {
+                    qDebug() << "weight changed";
+                    if (!boldFont) {
+                        boldFont = true;
+                        entBold.offset = fragment.position();
+                    } else {
+                        entBold.length = fragment.position() - entBold.offset;
+                        entities << entBold;
+                        boldFont = false;
+                    }
+                }
+                qDebug() << "fixed:" << (f.fontFamily() == QLatin1Literal("monospace"));
+                if (codeFont != (f.fontFamily() == QLatin1Literal("monospace"))) {
+                    qDebug() << "weight changed";
+                    if (!codeFont) {
+                        codeFont = true;
+                        entCode.offset = fragment.position();
+                    } else {
+                        entCode.length = fragment.position() - entCode.offset;
+                        entities << entCode;
+                        codeFont = false;
+                    }
+                }
+                qDebug() << "---";
+            }
+        }
+    }
+    qDebug() << entities.count();
+
+    CMessageModel::SMessage m;
+    const Telegram::Peer peer = m_chatInfoModel->getPeer(m_activeChatId);
+    m.setPeer(peer);
+    m.fromId = m_core->selfId();
+    m.type = TelegramNamespace::MessageTypeText;
+    m.text = ui->messagingMessageRich->toPlainText();
+    m.flags = TelegramNamespace::MessageFlagOut;
+    m.id64 = m_core->sendMessage(peer, m.text, entities);
+}
+
+void MainWindow::on_messagingSetBold_clicked()
+{
+    ui->messagingMessageRich->setFontWeight(ui->messagingSetBold->isChecked() ? QFont::Bold : QFont::Normal);
+}
+
+void MainWindow::on_messagingSetItalic_clicked()
+{
+    ui->messagingMessageRich->setFontItalic(ui->messagingSetItalic->isChecked());
+}
+
+void MainWindow::on_messagingSetCode_clicked()
+{
+    QTextCharFormat format = ui->messagingMessageRich->currentCharFormat();
+    if (ui->messagingSetCode->isChecked()) {
+        QFont f = format.font();
+        f.setFamily("monospace");
+        f.setStyleHint(QFont::Monospace);
+        format.setFont(f);
+    } else {
+        format.setFont(QFont());
+    }
+    ui->messagingMessageRich->setCurrentCharFormat(format);
+}
+
+void MainWindow::on_messagingMessageRich_cursorPositionChanged()
+{
+    const QTextCharFormat f = ui->messagingMessageRich->currentCharFormat();
+    ui->messagingSetBold->setChecked(f.fontWeight() >= QFont::Bold);
+    ui->messagingSetItalic->setChecked(f.fontItalic());
+    ui->messagingSetCode->setChecked(f.fontFamily() == QLatin1Literal("monospace"));
 }

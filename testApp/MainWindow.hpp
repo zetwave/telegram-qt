@@ -150,6 +150,16 @@ private slots:
     void on_findContact_clicked();
     void setUiProxyEnabled(bool enabled);
 
+    void on_groupChatSendButtonRich_clicked();
+
+    void on_messagingSetBold_clicked();
+
+    void on_messagingSetItalic_clicked();
+
+    void on_messagingSetCode_clicked();
+
+    void on_messagingMessageRich_cursorPositionChanged();
+
 private:
     void searchByUsername();
     void setRegistered(bool newRegistered);

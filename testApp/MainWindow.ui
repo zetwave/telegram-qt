@@ -706,6 +706,50 @@
                  </property>
                 </widget>
                </item>
+               <item row="2" column="6">
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <item>
+                  <widget class="QPushButton" name="groupChatSendButtonRich">
+                   <property name="text">
+                    <string>Send rich</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="messagingSetBold">
+                   <property name="text">
+                    <string>Bold</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="messagingSetItalic">
+                   <property name="text">
+                    <string>Italic</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="messagingSetCode">
+                   <property name="text">
+                    <string>Code</string>
+                   </property>
+                   <property name="checkable">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item row="2" column="0" colspan="6">
+                <widget class="QTextEdit" name="messagingMessageRich"/>
+               </item>
               </layout>
              </item>
             </layout>
