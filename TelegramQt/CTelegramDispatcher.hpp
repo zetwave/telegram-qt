@@ -115,7 +115,7 @@ public:
     bool requestHistory(const Telegram::Peer &peer, quint32 offset, quint32 limit);
     quint32 resolveUsername(const QString &userName);
 
-    quint64 sendMessage(const Telegram::Peer &peer, const QString &message);
+    quint64 sendMessage(const Telegram::Peer &peer, const QString &message, const QVector<Telegram::TextEntity> &entities);
     quint64 sendMedia(const Telegram::Peer &peer, const TLInputMedia &inputMedia);
     quint64 forwardMessage(const Telegram::Peer &peer, quint32 messageId);
 

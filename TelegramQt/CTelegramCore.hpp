@@ -119,7 +119,7 @@ public Q_SLOTS:
     quint32 uploadFile(const QByteArray &fileContent, const QString &fileName);
     quint32 uploadFile(QIODevice *source, const QString &fileName);
 
-    quint64 sendMessage(const Telegram::Peer &peer, const QString &message); // Message id is a random number
+    quint64 sendMessage(const Telegram::Peer &peer, const QString &message, const QVector<Telegram::TextEntity> &entries = { }); // Message id is a random number
     quint64 sendMedia(const Telegram::Peer &peer, const Telegram::MessageMediaInfo &messageInfo);
     quint64 forwardMessage(const Telegram::Peer &peer, quint32 messageId);
     /* Typing status is valid for 6 seconds. It is recommended to repeat typing status with localTypingRecommendedRepeatInterval() interval. */

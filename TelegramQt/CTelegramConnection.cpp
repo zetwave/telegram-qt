@@ -276,7 +276,7 @@ void CTelegramConnection::uploadFile(quint64 fileId, quint32 filePart, const QBy
     m_requestedFilesIds.insert(messageId, requestId);
 }
 
-quint64 CTelegramConnection::sendMessage(const TLInputPeer &peer, const QString &message, quint64 randomMessageId)
+quint64 CTelegramConnection::sendMessage(const TLInputPeer &peer, const QString &message, quint64 randomMessageId, const TLVector<TLMessageEntity> &entities)
 {
     if (message.length() > 4095) { // 4096 - 1
         qDebug() << Q_FUNC_INFO << "Can not send such long message due to server limitation. Current maximum length is 4095 characters.";
@@ -284,8 +284,6 @@ quint64 CTelegramConnection::sendMessage(const TLInputPeer &peer, const QString 
     }
 
     const TLReplyMarkup replyMarkup;
-    const TLVector<TLMessageEntity> entities;
-
     return messagesSendMessage(/* flags */0, peer, /* reply to message id*/ 0, message, randomMessageId, replyMarkup, entities);
 }
 

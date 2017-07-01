@@ -623,7 +623,7 @@ quint32 CTelegramDispatcher::resolveUsername(const QString &userName)
     return 0;
 }
 
-quint64 CTelegramDispatcher::sendMessage(const Telegram::Peer &peer, const QString &message)
+quint64 CTelegramDispatcher::sendMessage(const Telegram::Peer &peer, const QString &message, const QVector<Telegram::TextEntity> &entities)
 {
     if (!activeConnection()) {
         qWarning() << Q_FUNC_INFO << "Unable to send: no active connection";
@@ -662,7 +662,35 @@ quint64 CTelegramDispatcher::sendMessage(const Telegram::Peer &peer, const QStri
 #ifdef DEVELOPER_BUILD
     qDebug() << "sendMessage to" << inputPeer << message << "randomMessageId:" << randomId;
 #endif
-    const quint64 rpcMessageId = activeConnection()->sendMessage(inputPeer, message, randomId);
+
+
+    TLVector<TLMessageEntity> tlEntities;
+    for (const Telegram::TextEntity ent : entities) {
+        TLMessageEntity e;
+        switch (ent.type) {
+        case Telegram::TextEntity::Bold:
+            e.tlType = TLValue::MessageEntityBold;
+            break;
+        case Telegram::TextEntity::Italic:
+            e.tlType = TLValue::MessageEntityItalic;
+            break;
+        case Telegram::TextEntity::Pre:
+            e.tlType = TLValue::MessageEntityPre;
+            e.language = ent.language;
+            break;
+        default:
+            continue;
+        }
+
+        e.offset = ent.offset;
+        e.length = ent.length;
+        tlEntities << e;
+    }
+#ifdef DEVELOPER_BUILD
+    qDebug() << "Entities:" << tlEntities;
+#endif
+
+    const quint64 rpcMessageId = activeConnection()->sendMessage(inputPeer, message, randomId, tlEntities);
     addSentMessageId(peer, rpcMessageId, randomId);
     return randomId;
 }

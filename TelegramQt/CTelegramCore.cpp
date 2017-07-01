@@ -261,9 +261,9 @@ quint32 CTelegramCore::resolveUsername(const QString &userName)
     return m_private->m_dispatcher->resolveUsername(userName);
 }
 
-quint64 CTelegramCore::sendMessage(const Telegram::Peer &peer, const QString &message)
+quint64 CTelegramCore::sendMessage(const Telegram::Peer &peer, const QString &message, const QVector<Telegram::TextEntity> &entries)
 {
-    return m_private->m_dispatcher->sendMessage(peer, message);
+    return m_private->m_dispatcher->sendMessage(peer, message, entries);
 }
 
 quint32 CTelegramCore::uploadFile(const QByteArray &fileContent, const QString &fileName)
