@@ -16,7 +16,7 @@
 
 #include <QDebug>
 
-#define CONTACTLIST_AS_DIALOGS
+//#define CONTACTLIST_AS_DIALOGS
 
 namespace Telegram {
 

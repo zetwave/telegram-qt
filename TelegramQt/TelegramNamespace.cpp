@@ -286,6 +286,22 @@ void Telegram::MessageMediaInfo::setCaption(const QString &caption)
     d->caption = caption;
 }
 
+QByteArray Telegram::MessageMediaInfo::getCachedPhoto() const
+{
+    const TLVector<TLPhotoSize> *sizes = nullptr;
+    if (d->tlType == TLValue::MessageMediaWebPage) {
+        sizes = &d->webpage.photo.sizes;
+    } else {
+        sizes = &d->photo.sizes;
+    }
+    for (const TLPhotoSize &size : *sizes) {
+        if (size.tlType == TLValue::PhotoCachedSize) {
+            return size.bytes;
+        }
+    }
+    return QByteArray();
+}
+
 QString Telegram::MessageMediaInfo::mimeType() const
 {
     switch (d->tlType) {

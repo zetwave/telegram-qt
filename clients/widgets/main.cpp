@@ -21,8 +21,19 @@
 #include <QLocale>
 #include <QDebug>
 
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(cat, "telegram", QtInfoMsg)
+
 int main(int argc, char *argv[])
 {
+
+    qCCritical(cat) << "qCCritical";
+    qCWarning(cat) << "qCWarning";
+    qCInfo(cat) << "qCInfo";
+    qCDebug(cat) << "qCDebug";
+    return  0;
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
